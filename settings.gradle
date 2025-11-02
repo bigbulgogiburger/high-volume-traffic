@@ -1,0 +1,13 @@
+rootProject.name = 'kuke-board'
+
+include 'common'
+
+include 'service'
+
+include 'service:article'
+include 'service:comment'
+include 'service:view'
+include 'service:hot-article'
+include 'service:article-read'
+include 'service:like'
+include 'common:snowflake'
