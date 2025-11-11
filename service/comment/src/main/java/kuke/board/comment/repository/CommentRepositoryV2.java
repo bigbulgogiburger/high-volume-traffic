@@ -11,14 +11,14 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface CommentRepositoryV2 extends JpaRepository<Comment,Long> {
+public interface CommentRepositoryV2 extends JpaRepository<CommentV2,Long> {
 
     @Query("select c from CommentV2  c where c.commentPath.path = :path")
     Optional<CommentV2> findByPath(@Param("path") String path);
 
 
     @Query(
-            value = "   select path comment_v2 " +
+            value = "   select path from comment_v2 " +
                     "   where article_id = :articleId and path > :pathPrefix and path like :pathPrefix% " +
                     "   order by path desc limit 1",
             nativeQuery = true
