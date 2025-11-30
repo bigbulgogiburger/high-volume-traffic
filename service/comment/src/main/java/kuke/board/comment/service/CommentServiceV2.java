@@ -1,15 +1,20 @@
 package kuke.board.comment.service;
 
+import kuke.board.comment.entity.ArticleCommentCount;
 import kuke.board.comment.entity.Comment;
 import kuke.board.comment.entity.CommentPath;
 import kuke.board.comment.entity.CommentV2;
+import kuke.board.comment.repository.ArticleCommentCountRepository;
 import kuke.board.comment.repository.CommentRepositoryV2;
 import kuke.board.comment.service.request.CommentCreateRequestV2;
+import kuke.board.comment.service.request.CommentPageResponse;
 import kuke.board.comment.service.response.CommentResponse;
 import kuke.board.common.snowflake.Snowflake;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 import static java.util.function.Predicate.not;
 
@@ -18,6 +23,7 @@ import static java.util.function.Predicate.not;
 public class CommentServiceV2 {
     private final Snowflake snowflake = new Snowflake();
     private final CommentRepositoryV2 commentRepository;
+    private final ArticleCommentCountRepository articleCommentCountRepository;
 
     @Transactional
     public CommentResponse create(CommentCreateRequestV2 request) {
@@ -36,6 +42,13 @@ public class CommentServiceV2 {
 
                 )
         );
+
+        int result = articleCommentCountRepository.increase(request.getArticleId());
+        if(result == 0){
+            articleCommentCountRepository.save(
+                    ArticleCommentCount.of(request.getArticleId(), 1L)
+            );
+        }
 
         return CommentResponse.from(comment);
     }
@@ -74,6 +87,7 @@ public class CommentServiceV2 {
 
     private void delete(CommentV2 comment){
         commentRepository.delete(comment);
+        articleCommentCountRepository.decrease(comment.getArticleId());
 
         if(!comment.isRoot()){
             commentRepository.findByPath(comment.getCommentPath().getParentPath())
@@ -81,5 +95,25 @@ public class CommentServiceV2 {
                     .filter(not(this::hasChildren))
                     .ifPresent(this::delete);
         }
+    }
+
+    public CommentPageResponse readAll(Long articleId, Long page, Long pageSize){
+        return CommentPageResponse.of(
+        commentRepository.findAll(articleId,(page-1)*pageSize,pageSize).stream().map(CommentResponse::from).toList()
+        ,commentRepository.count(articleId,PageLimitCalculator.calculatePageLimit(page,pageSize,10L)));
+    }
+
+    public List<CommentResponse> readAllInfiniteScroll(Long articleId, String lastPath, Long pageSize){
+        List<CommentV2> comments = lastPath == null? commentRepository.findAllInfiniteScroll(articleId,pageSize):
+                commentRepository.findAllInfiniteScroll(articleId,lastPath,pageSize);
+
+        return comments.stream().map(CommentResponse::from).toList();
+
+    }
+
+    public Long count(Long articleId){
+        return articleCommentCountRepository
+                .findById(articleId)
+                .map(ArticleCommentCount::getCommentCount).orElse(0L);
     }
 }

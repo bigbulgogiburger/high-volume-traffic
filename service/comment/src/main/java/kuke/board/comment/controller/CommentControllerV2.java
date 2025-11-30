@@ -1,5 +1,6 @@
 package kuke.board.comment.controller;
 
+import kuke.board.comment.entity.CommentV2;
 import kuke.board.comment.service.CommentService;
 import kuke.board.comment.service.CommentServiceV2;
 import kuke.board.comment.service.request.CommentCreateRequest;
@@ -31,5 +32,33 @@ public class CommentControllerV2 {
     public void delete(@PathVariable Long commentId) {
         commentService.delete(commentId);
     }
+
+
+    @GetMapping("/v2/comments")
+    public CommentPageResponse readAll(
+            @RequestParam("articleId") Long articleId,
+            @RequestParam("page") Long page,
+            @RequestParam("pageSize") Long pageSize
+
+    ) {
+        return commentService.readAll(articleId,page,pageSize);
+    }
+
+    @GetMapping("/v2/comments/infinite-scroll")
+    public List<CommentResponse> readAllInfiniteScroll(
+            @RequestParam("articleId") Long articleId,
+            @RequestParam(value = "lastPath",required = false) String lastPath,
+            @RequestParam("pageSize") Long pageSize
+
+    ) {
+        return commentService.readAllInfiniteScroll(articleId,lastPath,pageSize);
+    }
+
+    @GetMapping("/v2/comments/articles/{articleId}/count")
+    public Long count(@PathVariable Long articleId) {
+        return commentService.count(articleId);
+    }
+
+
 
 }
