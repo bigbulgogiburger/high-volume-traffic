@@ -1,4 +1,4 @@
-package kuke.board.articleread.config;
+package kuke.board.hotarticle.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

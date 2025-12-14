@@ -1,4 +1,4 @@
-package kuke.board.articleread.repository;
+package kuke.board.hotarticle.repository;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.*;
 @SpringBootTest
 class HotArticleListRepositoryTest {
     @Autowired
-    kuke.board.articleread.repository.HotArticleListRepository hotArticleListRepository;
+    HotArticleListRepository hotArticleListRepository;
 
     @Test
     void addTest() throws InterruptedException {

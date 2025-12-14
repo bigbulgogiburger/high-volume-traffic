@@ -1,4 +1,4 @@
-package kuke.board.articleread.repository;
+package kuke.board.hotarticle.repository;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;

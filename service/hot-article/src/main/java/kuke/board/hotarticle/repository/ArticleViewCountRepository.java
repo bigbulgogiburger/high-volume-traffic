@@ -1,8 +1,10 @@
-package kuke.board.articleread.repository;
+package kuke.board.hotarticle.repository;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Repository;
+
+import java.time.Duration;
 
 @Repository
 @RequiredArgsConstructor
@@ -13,7 +15,7 @@ public class ArticleViewCountRepository {
     // hot-article::article::{articleId}::view-count
     private static final String KEY_FORMAT = "hot-article::article::%s::view-count";
 
-    public void createOrUpdate(Long articleId, Long viewCount,Long ttl){
+    public void createOrUpdate(Long articleId, Long viewCount, Duration ttl){
         redisTemplate.opsForValue().set(generateKey(articleId),String.valueOf(viewCount),ttl);
     }
 

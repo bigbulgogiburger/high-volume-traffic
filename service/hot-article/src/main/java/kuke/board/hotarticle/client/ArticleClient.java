@@ -1,4 +1,4 @@
-package kuke.board.articleread.client;
+package kuke.board.hotarticle.client;
 
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
